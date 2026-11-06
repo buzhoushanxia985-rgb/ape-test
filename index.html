@@ -25,18 +25,30 @@ h1 { font-size:26px; color:#FFD700; font-weight:900; line-height:1.35; }
 .next { margin-top:24px; width:100%; padding:16px; font-size:17px; font-weight:900; background:#FFD700; color:#000; border:none; border-radius:12px; cursor:pointer; display:none; }
 .next.show { display:block; }
 
-.result { background:#161616; border-radius:18px; padding:36px 26px; text-align:center; }
-.rname { font-size:44px; font-weight:900; color:#FFD700; margin:18px 0 8px; }
-.rtag { font-size:14px; color:#888; margin-bottom:26px; }
-.rline { font-size:21px; color:#fff; font-weight:bold; line-height:1.5; margin-bottom:20px; }
-.rdesc { font-size:15px; color:#AAA; line-height:1.85; text-align:left; margin-bottom:30px; }
-.rdesc b { color:#FFD700; }
-.share { background:#222; border-radius:14px; padding:18px; margin-bottom:16px; text-align:left; }
+.result { background:#161616; border-radius:18px; padding:32px 26px; }
+.rname { font-size:42px; font-weight:900; color:#FFD700; margin:16px 0 6px; text-align:center; }
+.rtag { font-size:13px; color:#888; margin-bottom:24px; text-align:center; }
+.rline { font-size:20px; color:#fff; font-weight:bold; line-height:1.5; margin-bottom:22px; text-align:center; }
+.sect { margin-bottom:24px; }
+.sect h3 { font-size:16px; color:#FFD700; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.sect h3::before { content:""; display:inline-block; width:4px; height:14px; background:#FFD700; border-radius:2px; }
+.sect p { font-size:14px; color:#BBB; line-height:1.85; }
+.sect p b { color:#FFD700; }
+.scores { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+.srow { display:flex; align-items:center; gap:10px; font-size:13px; }
+.sname { width:80px; color:#999; }
+.strack { flex:1; height:20px; background:#222; border-radius:4px; overflow:hidden; }
+.sfill { height:100%; background:linear-gradient(90deg,#8A6D00,#FFD700); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; font-size:11px; font-weight:900; color:#000; min-width:24px; }
+.sfill.dim { background:#3A3A3A; color:#888; }
+.risk-box { background:#1F1416; border-left:4px solid #E63946; border-radius:10px; padding:16px 18px; margin-top:10px; }
+.risk-box p { color:#DDD; }
+.risk-box p b { color:#E63946; }
+.share { background:#222; border-radius:14px; padding:18px; margin-top:8px; }
 .share h3 { font-size:15px; color:#FFD700; margin-bottom:12px; }
 .tags { font-size:14px; color:#888; line-height:1.9; }
-.paywall { background:#241C00; border:2px solid #FFD700; border-radius:14px; padding:22px; margin-top:26px; }
+.paywall { background:#241C00; border:2px solid #FFD700; border-radius:14px; padding:22px; margin-top:22px; }
 .paywall h3 { font-size:18px; color:#FFD700; margin-bottom:10px; }
-.paywall p { font-size:14px; color:#CCC; line-height:1.7; margin-bottom:14px; }
+.paywall p { font-size:14px; color:#CCC; line-height:1.7; margin-bottom:8px; }
 .paywall p b { color:#fff; }
 .again { margin-top:20px; background:none; border:1px solid #444; color:#888; padding:12px 24px; border-radius:10px; font-size:14px; cursor:pointer; width:100%; }
 </style>
@@ -86,22 +98,57 @@ const QUESTIONS = [
     { t: "稳稳复利的长期主义者", s: {B:2} },
     { t: "没亏过一分钱的守门员", s: {C:2} },
     { t: "躺着就把钱赚了的", s: {E:2} } ] },
+  { q: "账户里最让你睡不着觉的一笔持仓，是因为？", o: [
+    { t: "仓位太重，一波动就心惊", s: {A:1,C:1} },
+    { t: "不知道当初为什么买它", s: {D:1,E:1} },
+    { t: "跌得太深，割了心疼拿着难受", s: {C:1,A:1} },
+    { t: "没有这种持仓，我的都心里有数", s: {B:2} } ] },
+  { q: "如果你连续三个月跑输大盘，你会？", o: [
+    { t: "换策略！肯定是方法错了", s: {D:2,A:1} },
+    { t: "复盘逻辑，对的就继续拿", s: {B:2} },
+    { t: "减仓，先保住本金再说", s: {C:2} },
+    { t: "打开软件看一眼，然后继续躺", s: {E:2} } ] },
 ];
 
 const RESULTS = {
-  A: { name:"满仓战神", tag:"激进 90%+", line:"你的心脏是用来跳的，不是用来护盘的。",
-       desc:"你胆子大、下手狠、敢all in。这是天赋，也是最危险的开关。<b>你大概率还没经历一次真正的深套</b>——50%的回撤能扛住的人在市场里不到5%，且没人靠勇气穿越熊市。你不是要变怂，是要一套<b>仓位纪律</b>：单票上限、总仓上限、跌到哪必须减。战神死于没有刹车。" },
-  B: { name:"定投老农", tag:"稳健 · 纪律型", line:"别人追涨杀跌，你在种地。秋天见。",
-       desc:"你有纪律、有耐心、不贪。这是市场里最稀缺的组合。<b>你的风险不是亏钱，是无趣</b>——你会反复怀疑「是不是太保守了」，然后在某次行情里手痒重仓，把三年的纪律一次亏掉。你的功课是<b>守住无聊</b>：把定投规则写成纸贴墙上，行情越疯越不要看。" },
-  C: { name:"惊弓之鸟", tag:"极保守 · 风控型", line:"你的投资策略只有四个字：落袋为安。",
-       desc:"你极度厌恶亏损，跌 1% 就睡不着。<b>你亏的不是钱，是机会成本</b>——过去十年你大概率跑输通胀。真正的解法不是逼你冒险，是<b>分层</b>：把 90% 的钱放进你睡得着的地方，拿 10% 的「亏光也不心疼」的钱去练手感。你缺的不是勇气，是隔离。" },
-  D: { name:"消息面猎人", tag:"跟风 · 依赖型", line:"你的钱是别人的观点赚走的。",
-       desc:"你买卖的依据不是逻辑，是<b>谁说的</b>。博主说下一个十倍股，你就上车；股吧喊崩，你就跑。<b>你是不亏大钱的——前提是那个博主是神</b>。你的功课是建立<b>最小决策框架</b>：任何推荐先问三个问题——买什么、为什么现在、错了怎么退。答不上来就不买。" },
-  E: { name:"躺平佛系", tag:"被动 · 长期型", line:"你不理财，财不理你；你一理财，财离开你。",
-       desc:"你买了就忘，跌了不看，涨了也不知道。<b>听起来很佛，但你是全场心态最好的人</b>。你真正的风险不是波动，是<b>组合从来没人管</b>——一堆不知道为什么买的基金躺在那。你的功课是每年一次的<b>一年一度体检</b>：挑一天，把所有持仓列出来，问一句「今天还会买它吗」。不会买就换。" },
+  A: {
+    name:"满仓战神", tag:"激进 · 进攻型",
+    line:"你的心脏是用来跳的，不是用来护盘的。",
+    deep:"你是市场里最有胆量的那一批人。别人算风险，你算赔率；别人想退路，你想加仓。这种气质在牛市里是印钞机——<b>2020年那种行情里，你这种打法收益能翻倍</b>。但市场不是只有牛市。你的行为模式有三个特征：决策快、仓位重、复盘少。前两个是天赋，第三个是定时炸弹。你最缺的不是技术，是<b>一套让你活下来的刹车系统</b>。",
+    hidden:"你以为自己在「承担风险」，其实你在「忽视风险」。这两者的区别在于：前者知道最坏情况是什么并准备好了，后者根本没想过。你脑子里从没出现过「如果我错了，我会亏多少」这个问题——一次都没有。",
+    risk:"你最危险的瞬间：<b>牛市末期的最后一波加仓</b>。历史上每一轮崩盘里，满仓战神型的投资者都倒在同一条路上——2021年初满仓白酒、2015年加杠杆的那批人，画像和你一模一样。你在别人最贪婪时最贪婪，还以为那是勇气。"
+  },
+  B: {
+    name:"定投老农", tag:"稳健 · 纪律型",
+    line:"别人追涨杀跌，你在种地。秋天见。",
+    deep:"你是市场里最让人羡慕的一类人：有纪律、有耐心、不贪。过去十年，定投宽基指数的人年化 6–9% 不算难——<b>跑赢了 70% 的主动操作者</b>。你有规则、能执行、会等待。但你的问题恰恰藏在优点里：纪律的反面是僵化，耐心的反面是迟钝。你最大的功课不是学新招，是给纪律加一个「年度审查」开关。",
+    hidden:"你把「长期持有」当成了免死金牌。<b>纪律解决的是「怎么买」，不解决「买什么」</b>。2021年开始定投中概互联三年的人，多数是老农型——他们不是输在不够坚持，是输在没问过一句「我定投的东西本身对不对」。坚持错的方向，只是更快地到达错误的目的地。",
+    risk:"你最危险的瞬间：<b>某个持仓已经变质，但你因为「规则说继续」而无视它</b>。可能是行业逻辑变了，可能是管理层换了，可能只是它不再是你当初买它的理由了。你需要一个每年固定的「重审日」——问自己「今天我还会开始买它吗」。不会，就换。这不叫背叛长期主义，这叫长期主义本身。"
+  },
+  C: {
+    name:"惊弓之鸟", tag:"极保守 · 风控型",
+    line:"你的投资策略只有四个字：落袋为安。",
+    deep:"你是市场里最痛苦的一类人：想赚钱，但受不了亏钱。跌 1% 睡不着，跌 5% 清仓，跌 10% 开始怀疑人生。<b>讽刺的是，你每次清仓的位置，往往是短期底部</b>——不是你准，是所有人都和你一样在那时恐慌。你的核心问题不是胆小，是仓位和你能承受的波动不匹配。你用能承受 5% 波动的神经，扛着会波动 30% 的资产。",
+    hidden:"你亏的不是钱，是<b>机会成本</b>。过去十年你大概率跑输通胀，而且你心里清楚。但你不知道的是：你的风险厌恶其实是真实的天赋——它意味着你天然适合做资产配置。<b>你从没按这个天赋配置过</b>，你只是一直在用错误的方式惩罚自己的谨慎。",
+    risk:"你最危险的瞬间：<b>下跌 8–10% 时的「割肉解脱感」</b>。那一刻你会觉得「终于不用煎熬了」，然后市场开始反弹。统计一下你过去每次清仓的位置——大概率每次都是短期底部。你的问题不是判断力差，是<b>你从来没有用「亏光也不心疼」的钱去练手</b>，所以每一次波动都像第一次。"
+  },
+  D: {
+    name:"消息面猎人", tag:"跟风 · 依赖型",
+    line:"你的钱是别人的观点赚走的。",
+    deep:"你买卖的依据不是逻辑，是「谁说的」。博主说下一个十倍股，你上车；股吧喊崩，你跑路。你手机里存着 20 个财经博主，每天刷 3 小时行情资讯，<b>但你的账户曲线和你的信息量完全不成正比</b>。核心问题：你在用别人的观点，承担自己的亏损。博主说错了，他掉粉；你跟错了，你亏钱。这个不对称你从来没算过账。",
+    hidden:"你有个错觉：<b>信息越多 = 优势越大</b>。实际上你获取信息越快，亏得越快——因为你收到的「机会」和所有人同时收到，而你的对手盘就是发消息的人。真正值得看的不是「机会」，是「逻辑」：博主为什么这么判断、依据是什么、错了怎么退。<b>这三个问题你从来没问过</b>。",
+    risk:"你最危险的瞬间：<b>某个大V突然开始「带节奏」的那天</b>。他会给你一个听起来无懈可击的故事，配上「名额有限」的紧迫感，你 10 分钟内就会做出决策——而这个决策平时你需要研究一个月才敢做。<b>你缺的不是信息，是决策框架</b>：买什么、为什么现在、错了怎么退。答不上来就不买，这一条能救你一半的本金。"
+  },
+  E: {
+    name:"躺平佛系", tag:"被动 · 长期型",
+    line:"你不理财，财不理你；你一理财，财离开你。",
+    deep:"你是全场心态最好的人。买了就忘，跌了不看，涨了也不知道。别人焦虑你不焦虑，别人失眠你不失眠。<b>从心态上讲，你已经赢了 80% 的投资者</b>。但「躺平」和「放任」是两回事：躺平是主动选择后不管，放任是从来没管过。你大概率是后者——买了一堆不知道为什么买的基金，收益不知道，回撤不知道，甚至忘了自己在哪个平台买的。",
+    hidden:"你最大的隐性成本是<b>「沉默的烂持仓」</b>。那些你忘了的、不想看的、说不出为什么买的账户和基金，正在悄悄拖垮你的整体收益。它们不是「放着没事」，是<b>每年都在替你做错误的决策</b>。你从不卖，不是因为看好，是因为懒——懒在这里不中性，是负的。",
+    risk:"你最危险的瞬间：<b>某个你完全忘了的账户里，一只基金已经跌了 60%，而你毫不知情</b>。这不是吓你，是真实高频发生的事——定投扣款失败三个月没人发现、平台清盘了没人通知、基金经理换了你都不知道。<b>你需要的是一年一个下午的「持仓体检」</b>，就一次，把所有账户列出来问一句「今天我还会买它吗」。不会，就换。"
+  },
 };
 
-let cur = 0, score = {A:0,B:0,C:0,D:0,E:0}, picked = [];
+let cur = 0, score = {A:0,B:0,C:0,D:0,E:0};
 const app = document.getElementById('app');
 
 function render() {
@@ -112,7 +159,7 @@ function render() {
       <div class="header">
         <div class="badge">A股投资者风险人格测试</div>
         <h1>测出你是哪种投资者</h1>
-        <div class="sub">8 道题 · 1 分钟 · 免费测身份<br>想改的，详见结果页</div>
+        <div class="sub">10 道题 · 2 分钟 · 免费测身份<br>想改的，详见结果页</div>
       </div>
       <div class="qcard">
         <div class="qnum">Q${cur+1} / ${QUESTIONS.length}</div>
@@ -132,35 +179,62 @@ function render() {
       if (sel < 0) return;
       const s = q.o[sel].s;
       for (const k in s) score[k] += s[k];
-      picked.push(sel);
       cur++; render();
     };
   } else showResult();
 }
 
 function showResult() {
-  const key = Object.keys(score).sort((a,b) => score[b]-score[a])[0];
+  const total = Object.values(score).reduce((a,b)=>a+Math.abs(b),0) || 1;
+  const sorted = Object.keys(score).sort((a,b) => score[b]-score[a]);
+  const key = sorted[0];
   const r = RESULTS[key];
-  const scoresTxt = Object.keys(score).map(k => `${RESULTS[k].name} ${score[k]}`).join(' · ');
+  const maxScore = Math.max(...Object.values(score).map(Math.abs), 1);
+  const bars = sorted.map(k => {
+    const v = score[k];
+    const w = Math.max(Math.round(Math.abs(v)/maxScore*100), 6);
+    const isTop = k === key;
+    return `<div class="srow"><div class="sname">${RESULTS[k].name}</div><div class="strack"><div class="sfill ${isTop?'':'dim'}" style="width:${w}%">${v}</div></div></div>`;
+  }).join('');
   app.innerHTML = `
     <div class="result">
-      <div class="badge">你的投资者人格是</div>
+      <div style="text-align:center"><div class="badge" style="display:inline-block">你的投资者人格是</div></div>
       <div class="rname">${r.name}</div>
-      <div class="rtag">${r.tag} ｜ ${scoresTxt}</div>
+      <div class="rtag">${r.tag}</div>
       <div class="rline">「${r.line}」</div>
-      <div class="rdesc">${r.desc}</div>
-      <div class="share">
-        <h3>📄 想知道「你死在哪 + 怎么改」？</h3>
-        <div class="tags">
-          免费版到这里就结束了。<br><br>
-          <b style="color:#FFD700">详细报告 ¥1.99</b> 包含：<br>
-          ① 人格深度分析（你的优势与致命缺陷）<br>
-          ② 仓位结构诊断（你的钱该怎么放）<br>
-          ③ 你最常犯的 3 个错（附具体场景）<br>
-          ④ 改错清单 + 适合你的策略画像<br><br>
-          笔记下方商品卡片直接拍，拍下自动发货。
-        </div>
+
+      <div class="sect">
+        <h3>人格深度解读</h3>
+        <p>${r.deep}</p>
       </div>
+
+      <div class="sect">
+        <h3>你没意识到的隐性问题</h3>
+        <p>${r.hidden}</p>
+      </div>
+
+      <div class="sect">
+        <h3>你最危险的瞬间</h3>
+        <div class="risk-box"><p>${r.risk}</p></div>
+      </div>
+
+      <div class="sect">
+        <h3>你的五维得分</h3>
+        <div class="scores">${bars}</div>
+      </div>
+
+      <div class="paywall">
+        <h3>📄 这些问题怎么解决？</h3>
+        <p>免费版到这里就结束了。它告诉了你<b>「你是谁」</b>，但没告诉你<b>「怎么改」</b>。</p>
+        <p><b style="color:#FFD700">详细报告 ¥1.99</b> 包含：</p>
+        <p>① 人格深度分析（你的优势与致命缺陷）<br>
+        ② 仓位结构诊断（理想仓位对照表）<br>
+        ③ 你最常犯的 3 个错（附改法）<br>
+        ④ 改错清单 5 条（本周就能做）<br>
+        ⑤ 适合你的策略画像（适合做什么 + 别碰什么）</p>
+        <p style="margin-top:12px"><b>笔记下方商品卡片直接拍，拍下自动发货。</b></p>
+      </div>
+
       <button class="again" onclick="location.reload()">再测一次</button>
     </div>`;
 }
