@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股投资者风险人格测试</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Microsoft YaHei",sans-serif; }
+body { background:#0D0D0D; color:#fff; min-height:100vh; display:flex; justify-content:center; }
+.app { width:100%; max-width:520px; min-height:100vh; padding:30px 24px; display:flex; flex-direction:column; }
+.header { text-align:center; margin-bottom:30px; }
+.badge { display:inline-block; background:#FFD700; color:#000; font-size:13px; font-weight:900; padding:6px 14px; border-radius:6px; margin-bottom:16px; letter-spacing:1px; }
+h1 { font-size:26px; color:#FFD700; font-weight:900; line-height:1.35; }
+.sub { font-size:14px; color:#888; margin-top:10px; line-height:1.6; }
+
+.qcard { background:#161616; border-radius:18px; padding:28px 24px; }
+.qnum { font-size:13px; color:#666; margin-bottom:14px; letter-spacing:2px; }
+.qtitle { font-size:20px; line-height:1.5; font-weight:bold; margin-bottom:24px; }
+.opts { display:flex; flex-direction:column; gap:12px; }
+.opt { background:#222; border:2px solid transparent; border-radius:14px; padding:16px 18px; font-size:15px; line-height:1.5; cursor:pointer; transition:all .15s; }
+.opt:hover { border-color:#FFD700; background:#1C1C1C; }
+.opt.sel { border-color:#FFD700; background:#2A2300; }
+.bar { height:4px; background:#222; border-radius:2px; margin:26px 0 18px; overflow:hidden; }
+.bar-fill { height:100%; background:linear-gradient(90deg,#8A6D00,#FFD700); width:0; transition:width .3s; }
+.next { margin-top:24px; width:100%; padding:16px; font-size:17px; font-weight:900; background:#FFD700; color:#000; border:none; border-radius:12px; cursor:pointer; display:none; }
+.next.show { display:block; }
+
+.result { background:#161616; border-radius:18px; padding:36px 26px; text-align:center; }
+.rname { font-size:44px; font-weight:900; color:#FFD700; margin:18px 0 8px; }
+.rtag { font-size:14px; color:#888; margin-bottom:26px; }
+.rline { font-size:21px; color:#fff; font-weight:bold; line-height:1.5; margin-bottom:20px; }
+.rdesc { font-size:15px; color:#AAA; line-height:1.85; text-align:left; margin-bottom:30px; }
+.rdesc b { color:#FFD700; }
+.share { background:#222; border-radius:14px; padding:18px; margin-bottom:16px; text-align:left; }
+.share h3 { font-size:15px; color:#FFD700; margin-bottom:12px; }
+.tags { font-size:14px; color:#888; line-height:1.9; }
+.paywall { background:#241C00; border:2px solid #FFD700; border-radius:14px; padding:22px; margin-top:26px; }
+.paywall h3 { font-size:18px; color:#FFD700; margin-bottom:10px; }
+.paywall p { font-size:14px; color:#CCC; line-height:1.7; margin-bottom:14px; }
+.paywall p b { color:#fff; }
+.again { margin-top:20px; background:none; border:1px solid #444; color:#888; padding:12px 24px; border-radius:10px; font-size:14px; cursor:pointer; width:100%; }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const QUESTIONS = [
+  { q: "你打开炒股软件的频率？", o: [
+    { t: "一天八遍，涨跌都要盯", s: {A:2,D:1} },
+    { t: "每月一号发工资时看一次", s: {B:2} },
+    { t: "跌的时候才敢看", s: {C:2} },
+    { t: "基本不看，都忘了买过", s: {E:2} } ] },
+  { q: "账户浮亏 10%，第一反应？", o: [
+    { t: "补仓！越跌越买", s: {A:2,D:1} },
+    { t: "在计划内，不动", s: {B:2,E:1} },
+    { t: "割肉，睡不着", s: {C:2} },
+    { t: "快去问博主怎么说", s: {D:2} } ] },
+  { q: "朋友给你透露一个「内幕消息」？", o: [
+    { t: "全仓干，错过这村没这店", s: {A:2,D:1} },
+    { t: "不会重仓任何一只", s: {B:1,E:1} },
+    { t: "内幕都是骗人的，拉黑", s: {C:1} },
+    { t: "先小仓位跟一点", s: {D:2} } ] },
+  { q: "你的持仓有几只？", o: [
+    { t: "1–2 只，重仓干", s: {A:2} },
+    { t: "3–5 只，行业分散", s: {B:2} },
+    { t: "说不清，买了一堆基金", s: {E:1,C:1} },
+    { t: "博主推啥我买啥", s: {D:2} } ] },
+  { q: "突然大涨 20%，你会？", o: [
+    { t: "加仓！牛市来了", s: {A:2} },
+    { t: "按纪律分批止盈", s: {B:2} },
+    { t: "赶紧跑，落袋为安", s: {C:2} },
+    { t: "问大V要不要跑", s: {D:2,E:-1} } ] },
+  { q: "你能接受的最大回撤？", o: [
+    { t: "50% 以内都能扛", s: {A:2} },
+    { t: "20% 左右", s: {B:2} },
+    { t: "5%，再多受不了", s: {C:2} },
+    { t: "没概念，反正不看", s: {E:2} } ] },
+  { q: "你的理财知识主要来源？", o: [
+    { t: "财报、研报自己啃", s: {B:1,A:1} },
+    { t: "财经博主 / 大V", s: {D:2} },
+    { t: "股吧群里吵架", s: {D:1,A:1} },
+    { t: "不学，凭感觉", s: {E:1,C:1} } ] },
+  { q: "二十年后，希望别人怎么评价你的投资？", o: [
+    { t: "抓住所有风口的狠人", s: {A:2} },
+    { t: "稳稳复利的长期主义者", s: {B:2} },
+    { t: "没亏过一分钱的守门员", s: {C:2} },
+    { t: "躺着就把钱赚了的", s: {E:2} } ] },
+];
+
+const RESULTS = {
+  A: { name:"满仓战神", tag:"激进 90%+", line:"你的心脏是用来跳的，不是用来护盘的。",
+       desc:"你胆子大、下手狠、敢all in。这是天赋，也是最危险的开关。<b>你大概率还没经历一次真正的深套</b>——50%的回撤能扛住的人在市场里不到5%，且没人靠勇气穿越熊市。你不是要变怂，是要一套<b>仓位纪律</b>：单票上限、总仓上限、跌到哪必须减。战神死于没有刹车。" },
+  B: { name:"定投老农", tag:"稳健 · 纪律型", line:"别人追涨杀跌，你在种地。秋天见。",
+       desc:"你有纪律、有耐心、不贪。这是市场里最稀缺的组合。<b>你的风险不是亏钱，是无趣</b>——你会反复怀疑「是不是太保守了」，然后在某次行情里手痒重仓，把三年的纪律一次亏掉。你的功课是<b>守住无聊</b>：把定投规则写成纸贴墙上，行情越疯越不要看。" },
+  C: { name:"惊弓之鸟", tag:"极保守 · 风控型", line:"你的投资策略只有四个字：落袋为安。",
+       desc:"你极度厌恶亏损，跌 1% 就睡不着。<b>你亏的不是钱，是机会成本</b>——过去十年你大概率跑输通胀。真正的解法不是逼你冒险，是<b>分层</b>：把 90% 的钱放进你睡得着的地方，拿 10% 的「亏光也不心疼」的钱去练手感。你缺的不是勇气，是隔离。" },
+  D: { name:"消息面猎人", tag:"跟风 · 依赖型", line:"你的钱是别人的观点赚走的。",
+       desc:"你买卖的依据不是逻辑，是<b>谁说的</b>。博主说下一个十倍股，你就上车；股吧喊崩，你就跑。<b>你是不亏大钱的——前提是那个博主是神</b>。你的功课是建立<b>最小决策框架</b>：任何推荐先问三个问题——买什么、为什么现在、错了怎么退。答不上来就不买。" },
+  E: { name:"躺平佛系", tag:"被动 · 长期型", line:"你不理财，财不理你；你一理财，财离开你。",
+       desc:"你买了就忘，跌了不看，涨了也不知道。<b>听起来很佛，但你是全场心态最好的人</b>。你真正的风险不是波动，是<b>组合从来没人管</b>——一堆不知道为什么买的基金躺在那。你的功课是每年一次的<b>一年一度体检</b>：挑一天，把所有持仓列出来，问一句「今天还会买它吗」。不会买就换。" },
+};
+
+let cur = 0, score = {A:0,B:0,C:0,D:0,E:0}, picked = [];
+const app = document.getElementById('app');
+
+function render() {
+  if (cur < QUESTIONS.length) {
+    const q = QUESTIONS[cur];
+    const pct = Math.round(cur / QUESTIONS.length * 100);
+    app.innerHTML = `
+      <div class="header">
+        <div class="badge">A股投资者风险人格测试</div>
+        <h1>测出你是哪种投资者</h1>
+        <div class="sub">8 道题 · 1 分钟 · 免费测身份<br>想改的，详见结果页</div>
+      </div>
+      <div class="qcard">
+        <div class="qnum">Q${cur+1} / ${QUESTIONS.length}</div>
+        <div class="qtitle">${q.q}</div>
+        <div class="opts">${q.o.map((o,i)=>`<div class="opt" data-i="${i}">${o.t}</div>`).join('')}</div>
+        <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <button class="next" id="next">下一题 →</button>
+      </div>`;
+    let sel = -1;
+    document.querySelectorAll('.opt').forEach(o => o.onclick = () => {
+      document.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
+      o.classList.add('sel');
+      sel = +o.dataset.i;
+      document.getElementById('next').classList.add('show');
+    });
+    document.getElementById('next').onclick = () => {
+      if (sel < 0) return;
+      const s = q.o[sel].s;
+      for (const k in s) score[k] += s[k];
+      picked.push(sel);
+      cur++; render();
+    };
+  } else showResult();
+}
+
+function showResult() {
+  const key = Object.keys(score).sort((a,b) => score[b]-score[a])[0];
+  const r = RESULTS[key];
+  const scoresTxt = Object.keys(score).map(k => `${RESULTS[k].name} ${score[k]}`).join(' · ');
+  app.innerHTML = `
+    <div class="result">
+      <div class="badge">你的投资者人格是</div>
+      <div class="rname">${r.name}</div>
+      <div class="rtag">${r.tag} ｜ ${scoresTxt}</div>
+      <div class="rline">「${r.line}」</div>
+      <div class="rdesc">${r.desc}</div>
+      <div class="share">
+        <h3>📄 想知道「你死在哪 + 怎么改」？</h3>
+        <div class="tags">
+          免费版到这里就结束了。<br><br>
+          <b style="color:#FFD700">详细报告 ¥1.99</b> 包含：<br>
+          ① 人格深度分析（你的优势与致命缺陷）<br>
+          ② 仓位结构诊断（你的钱该怎么放）<br>
+          ③ 你最常犯的 3 个错（附具体场景）<br>
+          ④ 改错清单 + 适合你的策略画像<br><br>
+          笔记下方商品卡片直接拍，拍下自动发货。
+        </div>
+      </div>
+      <button class="again" onclick="location.reload()">再测一次</button>
+    </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
